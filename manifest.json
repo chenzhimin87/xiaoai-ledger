@@ -1,0 +1,61 @@
+{
+    "name": "小爱酱账 - 智能日程管理",
+    "short_name": "小爱酱账",
+    "description": "智能识别日程，温暖柔和风格的手账应用",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FDF8F3",
+    "theme_color": "#E8A87C",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "zh-CN",
+    "icons": [
+        {
+            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%23E8A87C' width='192' height='192' rx='48'/%3E%3Ctext x='96' y='120' font-size='80' text-anchor='middle' fill='white'%3E🌸%3C/text%3E%3C/svg%3E",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23E8A87C' width='512' height='512' rx='128'/%3E%3Ctext x='256' y='340' font-size='220' text-anchor='middle' fill='white'%3E🌸%3C/text%3E%3C/svg%3E",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["productivity", "lifestyle"],
+    "screenshots": [
+        {
+            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'%3E%3Crect fill='%23FDF8F3' width='390' height='844'/%3E%3Crect x='20' y='60' width='350' height='200' fill='white' rx='20'/%3E%3Crect x='20' y='280' width='170' height='100' fill='%238FB8E9' rx='15'/%3E%3Crect x='200' y='280' width='170' height='100' fill='%23F4A9A8' rx='15'/%3E%3C/svg%3E",
+            "sizes": "390x844",
+            "type": "image/svg+xml",
+            "form_factor": "narrow",
+            "label": "手机端界面"
+        },
+        {
+            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'%3E%3Crect fill='%23FDF8F3' width='1280' height='720'/%3E%3Crect x='40' y='40' width='600' height='200' fill='white' rx='20'/%3E%3Crect x='40' y='260' width='290' height='400' fill='%238FB8E9' rx='15'/%3E%3Crect x='350' y='260' width='290' height='400' fill='%23F4A9A8' rx='15'/%3E%3C/svg%3E",
+            "sizes": "1280x720",
+            "type": "image/svg+xml",
+            "form_factor": "wide",
+            "label": "电脑端界面"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "新建工作事项",
+            "short_name": "工作",
+            "description": "快速添加工作相关日程",
+            "url": "/?category=work",
+            "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect fill='%238FB8E9' width='96' height='96' rx='24'/%3E%3Ctext x='48' y='60' font-size='40' text-anchor='middle'%3E💼%3C/text%3E%3C/svg%3E", "sizes": "96x96" }]
+        },
+        {
+            "name": "新建生活事项",
+            "short_name": "生活",
+            "description": "快速添加生活相关日程",
+            "url": "/?category=life",
+            "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect fill='%23F4A9A8' width='96' height='96' rx='24'/%3E%3Ctext x='48' y='60' font-size='40' text-anchor='middle'%3E🏠%3C/text%3E%3C/svg%3E", "sizes": "96x96" }]
+        }
+    ],
+    "related_applications": [],
+    "prefer_related_applications": false
+}

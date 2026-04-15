@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方案A - 经典工程图纸风 | 小爱酱账预览</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== 方案A：经典工程图纸风 ===== */
+        :root {
+            /* 主色调 - 复古深蓝灰 */
+            --color-primary: #3D5A73;
+            --color-primary-light: #5A7A8F;
+            --color-primary-dark: #2C3E50;
+            
+            /* 工作区 - 工程棕 */
+            --color-work: #8B4513;
+            --color-work-light: #A0522D;
+            --color-work-dark: #654321;
+            
+            /* 生活区 - 橄榄绿 */
+            --color-life: #556B2F;
+            --color-life-light: #6B8E23;
+            --color-life-dark: #3D4F1F;
+            
+            /* 奇思妙想 - 复古紫 */
+            --color-idea: #6B5B73;
+            --color-idea-light: #8B7B93;
+            --color-idea-dark: #4A3D52;
+            
+            /* 背景色 - 米黄纸张 */
+            --bg-primary: #F5F0E6;
+            --bg-secondary: #E8E0D0;
+            --bg-card: #FAF8F0;
+            
+            /* 文字色 - 深蓝灰 */
+            --color-text: #2C3E50;
+            --color-text-muted: #5D6D7E;
+            
+            /* 边框 - 深色线条 */
+            --color-border: #B8B0A0;
+            
+            /* 阴影 - 柔和复古 */
+            --shadow-soft: 0 2px 8px rgba(44, 62, 80, 0.12);
+            --shadow-pressed: inset 0 2px 4px rgba(44, 62, 80, 0.08);
+            
+            /* 圆角 - 稍小更复古 */
+            --radius-small: 4px;
+            --radius-medium: 6px;
+            --radius-large: 8px;
+            
+            /* 过渡 */
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            background-image: 
+                linear-gradient(var(--color-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: center center;
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部 */
+        .app-header {
+            background: var(--bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-large);
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+        }
+
+        .date-display {
+            display: flex;
+            gap: 15px;
+            font-size: 1rem;
+            color: var(--color-text-muted);
+        }
+
+        /* 区块标题 */
+        .section-card {
+            background: var(--bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-large);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--color-primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        /* 输入框 */
+        textarea, input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-medium);
+            background: var(--bg-primary);
+            color: var(--color-text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* 按钮 */
+        .recognize-btn, .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-medium);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .recognize-btn:hover, .btn-primary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-text);
+            border: 2px solid var(--color-border);
+            padding: 10px 20px;
+            border-radius: var(--radius-medium);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        /* 标签页 */
+        .input-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--color-border);
+            background: var(--bg-primary);
+            color: var(--color-text);
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-large);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat-card.work {
+            border-left: 4px solid var(--color-work);
+        }
+
+        .stat-card.life {
+            border-left: 4px solid var(--color-life);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+        }
+
+        /* 视图切换 */
+        .view-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-large);
+            padding: 5px;
+        }
+
+        .view-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--color-text);
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .view-tab.active {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        /* 三栏布局 */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .task-column {
+            background: var(--bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-large);
+            padding: 15px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .work-column {
+            border-top: 4px solid var(--color-work);
+        }
+
+        .life-column {
+            border-top: 4px solid var(--color-life);
+        }
+
+        .ideas-column {
+            border-top: 4px solid var(--color-idea);
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .column-title {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .work-column .column-title {
+            color: var(--color-work);
+        }
+
+        .life-column .column-title {
+            color: var(--color-life);
+        }
+
+        .ideas-column .column-title {
+            color: var(--color-idea);
+        }
+
+        .add-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            background: var(--bg-primary);
+            color: var(--color-text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-btn:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        /* 任务卡片 */
+        .task-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-medium);
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .task-item:hover {
+            box-shadow: var(--shadow-soft);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: var(--color-primary);
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .task-meta {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+
+        .work-column .task-meta {
+            color: var(--color-work-light);
+        }
+
+        .life-column .task-meta {
+            color: var(--color-life-light);
+        }
+
+        /* 奇思妙想 */
+        .idea-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-medium);
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .idea-content {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .idea-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .idea-tag {
+            background: var(--color-idea-light);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(44, 62, 80, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-large);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .modal-header h3 {
+            color: var(--color-primary-dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--color-text-muted);
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* 浮动按钮 */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+        }
+
+        .fab-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition);
+        }
+
+        .fab-btn:hover {
+            background: var(--color-primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* 提示 */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-primary-dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-medium);
+            box-shadow: var(--shadow-soft);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* 复选框 */
+        .checkbox-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 10px;
+            font-weight: normal;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-inline input[type="checkbox"] {
+            width: auto;
+        }
+
+        /* 预览标签 */
+        .preview-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--color-work);
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--radius-medium);
+            font-weight: 700;
+            z-index: 1001;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-badge">方案A：经典工程图纸风</div>
+    
+    <div class="app-container">
+        <!-- 头部 -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">🦐 小爱酱账</h1>
+                <div class="date-display">
+                    <span>2026年4月15日</span>
+                    <span>星期三</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 智能识别区 -->
+        <section class="recognition-section">
+            <div class="section-card">
+                <h2 class="section-title">✨ 智能识别</h2>
+                <p class="section-desc">粘贴文字或上传截图，自动识别日程信息</p>
+                
+                <div class="input-tabs">
+                    <button class="tab-btn active">📝 文字识别</button>
+                    <button class="tab-btn">📷 图片识别</button>
+                </div>
+
+                <textarea placeholder="粘贴会议通知、材料提交要求等文字内容...
+
+例如：
+明天下午3点部门会议，讨论季度工作总结
+周五前提交项目报告到邮箱
+下周二晚上7点和朋友吃饭" rows="4"></textarea>
+                <button class="recognize-btn">🔍 识别日程</button>
+            </div>
+        </section>
+
+        <!-- 统计面板 -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card work">
+                    <div class="stat-icon">💼</div>
+                    <div class="stat-info">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">待办工作</span>
+                    </div>
+                </div>
+                <div class="stat-card life">
+                    <div class="stat-icon">🏠</div>
+                    <div class="stat-info">
+                        <span class="stat-number">2</span>
+                        <span class="stat-label">生活事项</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 视图切换标签 -->
+        <section class="view-toggle-section">
+            <div class="view-tabs">
+                <button class="view-tab active">📋 卡片视图</button>
+                <button class="view-tab">📊 表格视图 (A5)</button>
+            </div>
+        </section>
+
+        <!-- 三区列表 -->
+        <section class="tasks-section">
+            <div class="main-grid">
+                <!-- 左侧：工作区 -->
+                <div class="left-column">
+                    <div class="task-column work-column">
+                        <div class="column-header">
+                            <h3 class="column-title">
+                                <span class="column-icon">💼</span>
+                                工作
+                            </h3>
+                            <button class="add-btn">+</button>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-item">
+                                <input type="checkbox" class="task-checkbox">
+                                <div class="task-content">
+                                    <div class="task-title">部门例会</div>
+                                    <div class="task-meta">📅 4月15日 14:00</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" class="task-checkbox">
+                                <div class="task-content">
+                                    <div class="task-title">提交季度报告</div>
+                                    <div class="task-meta">📅 4月18日 截止</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" class="task-checkbox">
+                                <div class="task-content">
+                                    <div class="task-title">OA系统审批</div>
+                                    <div class="task-meta">📅 4月16日</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：奇思妙想 + 生活 -->
+                <div class="right-column">
+                    <!-- 奇思妙想区 -->
+                    <div class="task-column ideas-column">
+                        <div class="column-header">
+                            <h3 class="column-title">
+                                <span class="column-icon">💡</span>
+                                奇思妙想
+                            </h3>
+                            <button class="add-btn">+</button>
+                        </div>
+                        <div class="ideas-list">
+                            <div class="idea-item">
+                                <div class="idea-content">手账可以增加语音输入功能，方便开车时记录</div>
+                                <div class="idea-tags">
+                                    <span class="idea-tag">创意</span>
+                                    <span class="idea-tag">功能</span>
+                                </div>
+                            </div>
+                            <div class="idea-item">
+                                <div class="idea-content">周末去图书馆借几本关于时间管理的书</div>
+                                <div class="idea-tags">
+                                    <span class="idea-tag">备忘</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 生活区 -->
+                    <div class="task-column life-column">
+                        <div class="column-header">
+                            <h3 class="column-title">
+                                <span class="column-icon">🏠</span>
+                                生活
+                            </h3>
+                            <button class="add-btn">+</button>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-item">
+                                <input type="checkbox" class="task-checkbox">
+                                <div class="task-content">
+                                    <div class="task-title">超市采购</div>
+                                    <div class="task-meta">📅 4月15日 18:00</div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" class="task-checkbox">
+                                <div class="task-content">
+                                    <div class="task-title">朋友聚餐</div>
+                                    <div class="task-meta">📅 4月17日 19:00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 浮动按钮 -->
+    <div class="fab-container">
+        <button class="fab-btn">+</button>
+    </div>
+
+    <!-- 示例弹窗 -->
+    <div class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>新建日程</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>标题 *</label>
+                    <input type="text" placeholder="输入日程标题" value="部门例会">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>分类</label>
+                        <select>
+                            <option>💼 工作</option>
+                            <option>🏠 生活</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>日期 *</label>
+                        <input type="date" value="2026-04-15">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        时间
+                        <label class="checkbox-inline">
+                            <input type="checkbox" checked>
+                            <span>启用</span>
+                        </label>
+                    </label>
+                    <input type="time" value="14:00">
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea rows="3" placeholder="补充信息..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary">取消</button>
+                    <button class="btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 简单的交互演示
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.view-tab').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

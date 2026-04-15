@@ -1,0 +1,47 @@
+GitHub 文件上传帮助
+===================
+
+问题：访问 https://github.com/chenzhimin87/xiaoai-ledger/upload/main 显示无法访问
+
+解决方法：
+
+步骤 1：确认你已登录 GitHub
+- 打开 https://github.com
+- 确认右上角显示你的头像和用户名 chenzhimin87
+- 如果没有登录，先登录
+
+步骤 2：进入你的仓库
+- 访问 https://github.com/chenzhimin87/xiaoai-ledger
+- 确认能看到仓库页面
+
+步骤 3：找到上传入口
+在仓库页面，找以下其中一个入口：
+
+方法 A：
+1. 页面上应该有一个 "README" 或 "Get started by creating a new file or uploading an existing file" 的提示
+2. 点击 "uploading an existing file" 链接
+
+方法 B：
+1. 在地址栏直接输入：https://github.com/chenzhimin87/xiaoai-ledger/upload
+2. 注意：去掉 /main，只到 /upload
+
+方法 C：
+1. 在仓库页面点击 "Code" 按钮（绿色按钮）
+2. 在弹出的菜单中找 "Upload files" 选项
+
+步骤 4：上传文件
+1. 点击 "choose your files" 或拖拽文件到虚线框内
+2. 选择以下文件：
+   - index.html
+   - style.css
+   - app.js
+   - manifest.json
+   - lucky girl图标.jpg
+   - 复古背景.jpg
+3. 填写提交信息：Initial commit
+4. 点击 "Commit changes"
+
+如果还是无法访问：
+- 检查网络连接
+- 尝试使用 VPN
+- 或者使用 GitHub Desktop 软件上传

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>极简测试</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        textarea { width: 100%; height: 100px; }
+        button { padding: 10px 20px; margin: 10px 0; }
+        #log { background: #f0f0f0; padding: 10px; margin-top: 20px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>极简测试</h1>
+    <textarea id="input">学校党委常委会定于4月15日上午9:30召开会议</textarea>
+    <br>
+    <button id="btn">识别日程</button>
+    <div id="log"></div>
+
+    <script src="app.js"></script>
+    <script>
+        const log = document.getElementById('log');
+        function addLog(msg) {
+            log.textContent += msg + '\n';
+            console.log(msg);
+        }
+        
+        addLog('页面加载完成');
+        addLog('SmartRecognizer 存在: ' + (typeof SmartRecognizer !== 'undefined'));
+        addLog('UI 存在: ' + (typeof UI !== 'undefined'));
+        
+        document.getElementById('btn').addEventListener('click', function() {
+            addLog('--- 点击按钮 ---');
+            const text = document.getElementById('input').value.trim();
+            addLog('输入文本: ' + text.substring(0, 50));
+            
+            try {
+                const result = SmartRecognizer.recognize(text);
+                addLog('识别成功!');
+                addLog('标题: ' + result.title);
+                addLog('分类: ' + result.category);
+                addLog('时间: ' + result.deadline);
+            } catch(e) {
+                addLog('错误: ' + e.message);
+            }
+        });
+    </script>
+</body>
+</html>

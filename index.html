@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小爱酱账 - 智能日程管理</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#F5E6D3">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="lucky girl图标.jpg" alt="小爱酱账" class="logo-icon">
+                    <span class="logo-text">小爱酱账</span>
+                </div>
+                <div class="date-display">
+                    <div class="date" id="current-date"></div>
+                    <div class="weekday" id="current-weekday"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 智能识别区 -->
+        <section class="recognition-section">
+            <div class="section-card">
+                <h2 class="section-title">✨ 智能识别</h2>
+                <p class="section-desc">粘贴文字或上传截图，自动识别日程信息</p>
+                
+                <div class="recognition-tabs">
+                    <button class="tab-btn active" data-tab="text">📝 文字识别</button>
+                    <button class="tab-btn" data-tab="image">📷 图片识别</button>
+                </div>
+
+                <!-- 文字输入 -->
+                <div class="tab-content active" id="text-tab">
+                    <textarea 
+                        id="recognize-input" 
+                        placeholder="粘贴会议通知、材料提交要求等文字内容...
+
+例如：
+明天下午3点部门会议，讨论季度工作总结
+周五前提交项目报告到邮箱
+下周二晚上7点和朋友吃饭"
+                        rows="4"
+                    ></textarea>
+                    <button class="recognize-btn" id="recognize-text-btn">
+                        🔍 识别日程
+                    </button>
+                </div>
+
+                <!-- 图片上传 -->
+                <div class="tab-content" id="image-tab">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">📤</div>
+                        <p>点击、拖拽或粘贴截图</p>
+                        <span class="upload-hint">支持会议通知、聊天记录等截图（Ctrl+V 直接粘贴）</span>
+                        <input type="file" id="image-input" accept="image/*" hidden>
+                    </div>
+                    <div class="image-preview" id="image-preview"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 识别结果表单 -->
+        <section class="form-section" id="form-section" style="display: none;">
+            <div class="section-card">
+                <h3 class="form-title">📝 识别结果</h3>
+                <form id="task-form">
+                    <input type="hidden" id="task-id">
+                    
+                    <div class="form-group">
+                        <label for="task-title">标题</label>
+                        <input type="text" id="task-title" placeholder="日程标题">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-category">分类</label>
+                            <select id="task-category">
+                                <option value="work">💼 工作</option>
+                                <option value="life">🏠 生活</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-date">日期 *</label>
+                            <input type="date" id="task-date" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-time">
+                                时间
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="has-time">
+                                    <span>启用</span>
+                                </label>
+                            </label>
+                            <input type="time" id="task-time" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task-desc">备注</label>
+                        <textarea id="task-desc" rows="2" placeholder="补充信息..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancel-btn">取消</button>
+                        <button type="submit" class="btn-primary">✅ 保存日程</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 统计面板 -->
+        <section class="stats-section">
+            <div class="stats-grid two-col">
+                <div class="stat-card work">
+                    <div class="stat-icon">💼</div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="work-count">0</span>
+                        <span class="stat-label">待办工作</span>
+                    </div>
+                </div>
+                <div class="stat-card life">
+                    <div class="stat-icon">🏠</div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="life-count">0</span>
+                        <span class="stat-label">生活事项</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 视图切换标签 -->
+        <section class="view-toggle-section">
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="card">📋 卡片视图</button>
+                <button class="view-btn" data-view="table">📊 表格视图 (A5)</button>
+            </div>
+        </section>
+
+        <!-- 三区列表：左(工作) | 右(奇思妙想+生活) -->
+        <section class="tasks-section" id="card-view">
+            <div class="main-grid">
+                <!-- 左侧：工作区 -->
+                <div class="left-column">
+                    <div class="task-column work-column">
+                        <div class="column-header">
+                            <h3 class="column-title">
+                                <span class="column-icon">💼</span>
+                                工作
+                            </h3>
+                            <button class="add-btn" data-category="work">+</button>
+                        </div>
+                        <div class="task-list" id="work-list">
+                            <!-- 工作列表项 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：奇思妙想 + 生活 -->
+                <div class="right-column">
+                    <!-- 奇思妙想区 -->
+                    <div class="task-column ideas-column">
+                        <div class="column-header">
+                            <h3 class="column-title">
+                                <span class="column-icon">💡</span>
+                                奇思妙想
+                            </h3>
+                            <button class="add-btn" id="add-idea-btn">+</button>
+                        </div>
+                        <div class="ideas-list" id="ideas-list">
+                            <!-- 奇思妙想列表 -->
+                        </div>
+                    </div>
+
+                    <!-- 生活区 -->
+                    <div class="task-column life-column">
+                        <div class="column-header">
+                            <h3 class="column-title">
+                                <span class="column-icon">🏠</span>
+                                生活
+                            </h3>
+                            <button class="add-btn" data-category="life">+</button>
+                        </div>
+                        <div class="task-list" id="life-list">
+                            <!-- 生活列表项 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- A5 表格视图 -->
+        <section class="table-section" id="table-view" style="display: none;">
+            <div class="a5-container">
+                <div class="a5-page">
+                    <div class="a5-header">
+                        <h3 class="a5-title">📒 日程手账</h3>
+                        <span class="a5-date" id="table-date"></span>
+                    </div>
+                    <div class="a5-content">
+                        <table class="a5-table" id="a5-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-status">✓</th>
+                                    <th class="col-time">时间</th>
+                                    <th class="col-title">事项</th>
+                                    <th class="col-category">分类</th>
+                                </tr>
+                            </thead>
+                            <tbody id="a5-table-body">
+                                <!-- 表格内容 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="a5-footer">
+                        <span>温暖手账 🌸</span>
+                        <span id="a5-stats"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="table-actions">
+                <button class="btn-secondary" onclick="window.print()">🖨️ 打印</button>
+                <button class="btn-primary" id="refresh-table-btn">🔄 刷新</button>
+            </div>
+        </section>
+
+        <!-- 底部操作栏 -->
+        <div class="fab-container">
+            <button class="fab-btn" id="fab-add">+</button>
+        </div>
+    </div>
+
+    <!-- 奇思妙想弹窗 -->
+    <div class="modal-overlay" id="idea-modal-overlay">
+        <div class="modal idea-modal">
+            <div class="modal-header">
+                <h3 id="idea-modal-title">记录奇思妙想</h3>
+                <button class="modal-close" id="idea-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="idea-form">
+                    <input type="hidden" id="idea-id">
+                    
+                    <div class="form-group">
+                        <label for="idea-content">内容 *</label>
+                        <textarea id="idea-content" rows="4" placeholder="记录你的灵感、想法、备忘..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="idea-tags">标签（可选，用空格分隔）</label>
+                        <input type="text" id="idea-tags" placeholder="例如：创意 灵感 备忘">
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="idea-modal-cancel">取消</button>
+                        <button type="submit" class="btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑弹窗 -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">新建日程</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="modal-form">
+                    <input type="hidden" id="modal-task-id">
+                    
+                    <div class="form-group">
+                        <label for="modal-task-title">标题 *</label>
+                        <input type="text" id="modal-task-title" placeholder="输入日程标题" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modal-task-category">分类</label>
+                            <select id="modal-task-category">
+                                <option value="work">💼 工作</option>
+                                <option value="life">🏠 生活</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-task-date">日期 *</label>
+                            <input type="date" id="modal-task-date" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modal-task-time">
+                                时间
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="modal-has-time">
+                                    <span>启用</span>
+                                </label>
+                            </label>
+                            <input type="time" id="modal-task-time" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-task-desc">备注</label>
+                        <textarea id="modal-task-desc" rows="3" placeholder="补充信息..."></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="modal-cancel">取消</button>
+                        <button type="submit" class="btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示消息 -->
+    <div class="toast" id="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

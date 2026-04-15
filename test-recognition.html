@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>识别功能测试</title>
+    <style>
+        body { font-family: 'Noto Sans SC', sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: #8B6F47; }
+        .test-item { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .input-text { background: #f9f9f9; padding: 10px; margin-bottom: 10px; font-size: 14px; color: #666; }
+        .result { background: #e8f5e9; padding: 10px; border-radius: 4px; }
+        .result.error { background: #ffebee; }
+        .pass { color: #4caf50; }
+        .fail { color: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>智能识别功能测试结果</h1>
+        <div id="test-results"></div>
+    </div>
+<script>
+const testCases = [
+    { id: 1, text: '各二级学院主任好！此前发布的"双百行动"工作简报征稿通知，原截止日期为4月6日，现投稿时间延长至明天（4月15日）下午17：00前。', expected: { hasDate: true } },
+    { id: 2, text: '材料提交：请各学院填写《仲恺农业工程学院校史馆讲解员推荐名单汇总表》。截止时间：2026 年 4 月 7 日（周二）17:00 前。', expected: { hasDate: true } },
+    { id: 3, text: '各位主任：晚上好！学校党委常委会（2026年第6次）定于明天（4月14日）上午9:30在白云校区德新楼666会议室召开会议。', expected: { hasDate: true } },
+    { id: 4, text: '各位办公室主任上午好！2026年基层党建工作要点OA征求意见表已到期，如各单位有修改意见，请于今天上午11点前发我，谢谢。', expected: { hasDate: true } },
+    { id: 5, text: '通知：请各部门主要负责人于4月13日-17日前往德新楼601办公室阅文（仲党函字〔2026〕13号）。谢谢', expected: { hasDate: true } },
+    { id: 6, text: '各位主任好！请提醒本单位中层干部听课每月至少1次，并及时在中层干部听课评价系统中填报听课情况。', expected: { hasDate: false } },
+    { id: 7, text: '各位主任：校长办公会4月7日上午9：00在白云校区600会议室开，会议材料已发至汇报和列席单位负责人。', expected: { hasDate: true } }
+];
+
+function recognize(text) {
+    const workKeywords = ['会议', '提交', '截止', 'OA', '常委会', '办公会', '党委', '学院', '填报', '阅文', '听课', '投稿', '征求意见'];
+    let isWork = workKeywords.some(k => text.includes(k));
+    const timePatterns = [
+        /明天[（(]\d{1,2}月\d{1,2}[日号][)）]/, /\d{4}年\d{1,2}月\d{1,2}[日号]/,
+        /\d{1,2}月\d{1,2}[日号]/, /今天[上午下午晚上]/, /[上下]午\d+[点:：]/
+    ];
+    let hasDate = timePatterns.some(p => p.test(text));
+    let title = '';
+    const bookMatch = text.match(/《([^》]{2,30})》/);
+    if (bookMatch) title = `提交《${bookMatch[1]}》`;
+    else if (text.includes('常委会')) title = '学校党委常委会';
+    else if (text.includes('办公会')) title = '校长办公会';
+    else if (text.includes('阅文')) { const docMatch = text.match(/阅文[（(]([^）)]{5,40})[)）]/); title = docMatch ? `阅文：${docMatch[1]}` : '阅文通知'; }
+    else if (text.includes('投稿')) { const actionMatch = text.match(/([^，。]{2,20})(?:工作简报|征稿|投稿)/); title = actionMatch ? `${actionMatch[1]}投稿` : '投稿通知'; }
+    else if (text.includes('听课')) title = '听课填报提醒';
+    else if (text.includes('OA')) { const oaMatch = text.match(/(\d{4}年[^（(]{2,20})/); title = oaMatch ? `${oaMatch[1]}征求意见` : 'OA征求意见'; }
+    return { title: title || '工作事项', category: isWork ? 'work' : 'life', hasDate: hasDate };
+}
+
+const resultsDiv = document.getElementById('test-results');
+testCases.forEach(test => {
+    const result = recognize(test.text);
+    const allPass = result.hasDate === test.expected.hasDate && result.title !== '工作事项' && result.category === 'work';
+    resultsDiv.innerHTML += `<div class="test-item"><h3>测试 ${test.id} ${allPass ? '<span class="pass">通过</span>' : '<span class="fail">失败</span>'}</h3><div class="input-text">${test.text.substring(0, 80)}...</div><div class="result ${allPass ? '' : 'error'}"><div>标题: ${result.title}</div><div>时间: ${result.hasDate ? '识别到' : '未识别'}</div></div></div>`;
+});
+</script>
+</body>
+</html>
