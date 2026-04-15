@@ -1435,12 +1435,233 @@ const UI = {
             }
         };
         reader.readAsText(file);
+    },
+
+    // ========== GitHub Gist 同步功能 ==========
+    bindGistSyncEvents() {
+        // 打开同步设置
+        document.getElementById('gist-sync-btn')?.addEventListener('click', () => {
+            this.openGistModal();
+        });
+
+        // 关闭同步弹窗
+        document.getElementById('gist-modal-close')?.addEventListener('click', () => {
+            this.closeGistModal();
+        });
+
+        // 点击遮罩关闭
+        document.getElementById('gist-modal-overlay')?.addEventListener('click', (e) => {
+            if (e.target.id === 'gist-modal-overlay') {
+                this.closeGistModal();
+            }
+        });
+
+        // 保存设置
+        document.getElementById('save-gist-settings')?.addEventListener('click', () => {
+            this.saveGistSettings();
+        });
+
+        // 上传数据到 Gist
+        document.getElementById('upload-to-gist')?.addEventListener('click', () => {
+            this.uploadToGist();
+        });
+
+        // 从 Gist 下载数据
+        document.getElementById('download-from-gist')?.addEventListener('click', () => {
+            this.downloadFromGist();
+        });
+    },
+
+    // 打开 Gist 同步弹窗
+    openGistModal() {
+        const modal = document.getElementById('gist-modal-overlay');
+        const settings = this.getGistSettings();
+
+        document.getElementById('gist-token').value = settings.token || '';
+        document.getElementById('gist-id').value = settings.gistId || '';
+
+        this.updateGistStatus();
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    },
+
+    // 关闭 Gist 同步弹窗
+    closeGistModal() {
+        const modal = document.getElementById('gist-modal-overlay');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    },
+
+    // 获取 Gist 设置
+    getGistSettings() {
+        const settings = localStorage.getItem('gist-settings');
+        return settings ? JSON.parse(settings) : {};
+    },
+
+    // 保存 Gist 设置
+    saveGistSettings() {
+        const token = document.getElementById('gist-token').value.trim();
+        const gistId = document.getElementById('gist-id').value.trim();
+
+        if (!token) {
+            this.showToast('请输入 GitHub Token');
+            return;
+        }
+
+        const settings = { token, gistId };
+        localStorage.setItem('gist-settings', JSON.stringify(settings));
+        this.showToast('设置已保存');
+        this.updateGistStatus();
+    },
+
+    // 更新同步状态显示
+    updateGistStatus() {
+        const settings = this.getGistSettings();
+        const statusEl = document.getElementById('gist-status');
+
+        if (!settings.token) {
+            statusEl.textContent = '未配置';
+            statusEl.style.color = '#999';
+        } else if (settings.gistId) {
+            statusEl.textContent = '已配置 Gist ID';
+            statusEl.style.color = '#28a745';
+        } else {
+            statusEl.textContent = 'Token 已保存，需创建 Gist';
+            statusEl.style.color = '#ffc107';
+        }
+    },
+
+    // 上传数据到 Gist
+    async uploadToGist() {
+        const settings = this.getGistSettings();
+        if (!settings.token) {
+            this.showToast('请先配置 GitHub Token');
+            return;
+        }
+
+        const data = {
+            tasks: Storage.getAll(),
+            ideas: IdeasStorage.getAll(),
+            syncTime: new Date().toISOString(),
+            version: '1.0'
+        };
+
+        try {
+            this.showToast('正在上传...');
+
+            const body = {
+                description: '小爱酱账数据备份',
+                public: false,
+                files: {
+                    'xiaoaizhang-data.json': {
+                        content: JSON.stringify(data, null, 2)
+                    }
+                }
+            };
+
+            let url = 'https://api.github.com/gists';
+            let method = 'POST';
+
+            // 如果已有 Gist ID，则更新
+            if (settings.gistId) {
+                url = `https://api.github.com/gists/${settings.gistId}`;
+                method = 'PATCH';
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `token ${settings.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || '上传失败');
+            }
+
+            const result = await response.json();
+
+            // 保存 Gist ID
+            if (!settings.gistId) {
+                settings.gistId = result.id;
+                localStorage.setItem('gist-settings', JSON.stringify(settings));
+                document.getElementById('gist-id').value = result.id;
+                this.updateGistStatus();
+            }
+
+            this.showToast(`上传成功！${new Date().toLocaleString()}`);
+        } catch (err) {
+            this.showToast('上传失败: ' + err.message);
+            console.error('Gist 上传错误:', err);
+        }
+    },
+
+    // 从 Gist 下载数据
+    async downloadFromGist() {
+        const settings = this.getGistSettings();
+        if (!settings.token || !settings.gistId) {
+            this.showToast('请先配置 Token 和 Gist ID');
+            return;
+        }
+
+        try {
+            this.showToast('正在下载...');
+
+            const response = await fetch(`https://api.github.com/gists/${settings.gistId}`, {
+                headers: {
+                    'Authorization': `token ${settings.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('下载失败');
+            }
+
+            const result = await response.json();
+            const fileContent = result.files['xiaoaizhang-data.json']?.content;
+
+            if (!fileContent) {
+                throw new Error('未找到数据文件');
+            }
+
+            const data = JSON.parse(fileContent);
+
+            if (!confirm(`确定要覆盖当前数据吗？\n云端数据时间: ${new Date(data.syncTime).toLocaleString()}`)) {
+                return;
+            }
+
+            // 导入数据
+            if (data.tasks && Array.isArray(data.tasks)) {
+                Storage.save(data.tasks);
+            }
+            if (data.ideas && Array.isArray(data.ideas)) {
+                IdeasStorage.save(data.ideas);
+            }
+
+            // 刷新显示
+            this.renderTasks();
+            this.renderIdeas();
+            this.updateStats();
+
+            this.showToast('数据同步成功！');
+            this.closeGistModal();
+        } catch (err) {
+            this.showToast('下载失败: ' + err.message);
+            console.error('Gist 下载错误:', err);
+        }
     }
 };
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
     UI.init();
+    UI.bindBackupEvents();
+    UI.bindGistSyncEvents();
 });
 
 // 注册 Service Worker（PWA支持）- 可选功能
