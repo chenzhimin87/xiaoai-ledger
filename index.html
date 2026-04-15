@@ -22,6 +22,7 @@
                     <div class="date" id="current-date"></div>
                     <div class="weekday" id="current-weekday"></div>
                 </div>
+                <button type="button" class="btn-icon" id="backup-btn" title="数据备份">💾</button>
             </div>
         </header>
 
@@ -320,6 +321,30 @@
                         <button type="submit" class="btn-primary">保存</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据备份弹窗 -->
+    <div class="modal-overlay" id="backup-modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">💾 数据备份</h3>
+                <button type="button" class="modal-close" id="backup-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="backup-section">
+                    <h4>📤 导出数据</h4>
+                    <p>将所有日程数据导出为文件，用于备份或迁移到其他设备</p>
+                    <button type="button" class="btn-primary" id="export-data-btn">导出数据</button>
+                </div>
+                <div class="backup-divider"></div>
+                <div class="backup-section">
+                    <h4>📥 导入数据</h4>
+                    <p>从备份文件恢复数据，将覆盖当前所有数据</p>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                    <button type="button" class="btn-primary" id="import-data-btn">选择文件导入</button>
+                </div>
             </div>
         </div>
     </div>

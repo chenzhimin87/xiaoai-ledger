@@ -660,7 +660,10 @@ const UI = {
                 this.closeModal();
             }
         });
-        
+
+        // 数据备份功能
+        this.bindBackupEvents();
+
         // 时间启用/禁用切换（识别结果表单）
         const timeToggle = document.getElementById('has-time');
         const timeInput = document.getElementById('task-time');
@@ -1322,6 +1325,116 @@ const UI = {
             this.renderIdeas();
             this.showToast('已删除');
         }
+    },
+
+    // ========== 数据备份功能 ==========
+    bindBackupEvents() {
+        // 打开备份弹窗
+        document.getElementById('backup-btn')?.addEventListener('click', () => {
+            this.openBackupModal();
+        });
+
+        // 关闭备份弹窗
+        document.getElementById('backup-modal-close')?.addEventListener('click', () => {
+            this.closeBackupModal();
+        });
+
+        // 点击遮罩关闭
+        document.getElementById('backup-modal-overlay')?.addEventListener('click', (e) => {
+            if (e.target.id === 'backup-modal-overlay') {
+                this.closeBackupModal();
+            }
+        });
+
+        // 导出数据
+        document.getElementById('export-data-btn')?.addEventListener('click', () => {
+            this.exportData();
+        });
+
+        // 导入数据
+        document.getElementById('import-data-btn')?.addEventListener('click', () => {
+            document.getElementById('import-file-input')?.click();
+        });
+
+        // 文件选择后导入
+        document.getElementById('import-file-input')?.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                this.importData(e.target.files[0]);
+            }
+        });
+    },
+
+    // 打开备份弹窗
+    openBackupModal() {
+        const modal = document.getElementById('backup-modal-overlay');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    },
+
+    // 关闭备份弹窗
+    closeBackupModal() {
+        const modal = document.getElementById('backup-modal-overlay');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    },
+
+    // 导出数据
+    exportData() {
+        const data = {
+            tasks: Storage.getAll(),
+            ideas: IdeasStorage.getAll(),
+            exportTime: new Date().toISOString(),
+            version: '1.0'
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `小爱酱账备份_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        this.showToast('数据已导出');
+        this.closeBackupModal();
+    },
+
+    // 导入数据
+    importData(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+
+                if (!confirm('导入数据将覆盖当前所有数据，确定继续吗？')) {
+                    return;
+                }
+
+                // 导入任务
+                if (data.tasks && Array.isArray(data.tasks)) {
+                    Storage.save(data.tasks);
+                }
+
+                // 导入奇思妙想
+                if (data.ideas && Array.isArray(data.ideas)) {
+                    IdeasStorage.save(data.ideas);
+                }
+
+                // 刷新显示
+                this.renderTasks();
+                this.renderIdeas();
+                this.updateStats();
+
+                this.showToast('数据导入成功');
+                this.closeBackupModal();
+            } catch (err) {
+                this.showToast('文件格式错误，导入失败');
+                console.error('导入错误:', err);
+            }
+        };
+        reader.readAsText(file);
     }
 };
 
