@@ -611,7 +611,7 @@ const UI = {
         // 添加按钮（工作/生活区）
         document.querySelectorAll('.add-btn[data-category]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const category = e.target.dataset.category;
+                const category = e.currentTarget.dataset.category;
                 this.openModal(null, category);
             });
         });
@@ -1134,14 +1134,14 @@ const UI = {
             document.getElementById('modal-task-time').style.opacity = '0.5';
         }
         
-        modal.classList.add('active');
+        modal.classList.add('show');
         document.body.style.overflow = 'hidden';
     },
-    
+
     // 关闭弹窗
     closeModal() {
         const modal = document.getElementById('modal-overlay');
-        modal.classList.remove('active');
+        modal.classList.remove('show');
         document.body.style.overflow = '';
     },
     
@@ -1267,15 +1267,15 @@ const UI = {
             document.getElementById('idea-id').value = '';
         }
         
-        modal.classList.add('active');
+        modal.classList.add('show');
         document.body.style.overflow = 'hidden';
         document.getElementById('idea-content').focus();
     },
-    
+
     // 关闭奇思妙想弹窗
     closeIdeaModal() {
         const modal = document.getElementById('idea-modal-overlay');
-        modal.classList.remove('active');
+        modal.classList.remove('show');
         document.body.style.overflow = '';
     },
     
