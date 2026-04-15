@@ -23,6 +23,7 @@
                     <div class="weekday" id="current-weekday"></div>
                 </div>
                 <button type="button" class="btn-icon" id="backup-btn" title="数据备份">💾</button>
+                <button type="button" class="btn-icon" id="gist-sync-btn" title="云端同步">☁️</button>
             </div>
         </header>
 
@@ -344,6 +345,47 @@
                     <p>从备份文件恢复数据，将覆盖当前所有数据</p>
                     <input type="file" id="import-file-input" accept=".json" style="display: none;">
                     <button type="button" class="btn-primary" id="import-data-btn">选择文件导入</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gist 同步弹窗 -->
+    <div class="modal-overlay" id="gist-modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">☁️ 云端同步</h3>
+                <button type="button" class="modal-close" id="gist-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">同步状态</label>
+                    <div id="gist-status" style="padding: 8px 12px; background: var(--bg-secondary); border-radius: var(--radius-small); font-size: 0.9rem;">未配置</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="gist-token">GitHub Token</label>
+                    <input type="password" class="form-input" id="gist-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                    <small style="color: var(--color-text-muted); display: block; margin-top: 4px;">用于访问 GitHub Gist 服务</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="gist-id">Gist ID（可选）</label>
+                    <input type="text" class="form-input" id="gist-id" placeholder="首次上传会自动生成">
+                    <small style="color: var(--color-text-muted); display: block; margin-top: 4px;">多设备同步时需要填写相同的 Gist ID</small>
+                </div>
+                <div class="backup-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn-secondary" id="save-gist-settings">保存设置</button>
+                </div>
+                <div class="backup-divider"></div>
+                <div class="backup-section">
+                    <h4>⬆️ 上传到云端</h4>
+                    <p>将当前数据备份到 GitHub Gist</p>
+                    <button type="button" class="btn-primary" id="upload-to-gist">上传到云端</button>
+                </div>
+                <div class="backup-divider"></div>
+                <div class="backup-section">
+                    <h4>⬇️ 从云端下载</h4>
+                    <p>从 GitHub Gist 恢复数据，将覆盖当前数据</p>
+                    <button type="button" class="btn-primary" id="download-from-gist">从云端下载</button>
                 </div>
             </div>
         </div>
