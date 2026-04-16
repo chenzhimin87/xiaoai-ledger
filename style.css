@@ -506,10 +506,22 @@ body {
 
 .tasks-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: clamp(16px, 3vw, 24px);
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(12px, 2vw, 24px);
     max-width: 1200px;
     margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .tasks-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .tasks-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .task-column {
@@ -519,6 +531,7 @@ body {
     padding: clamp(12px, 2vw, 20px);
     box-shadow: var(--shadow-soft);
     min-width: 0;
+    width: 100%;
 }
 
 .task-column.work {
@@ -1028,6 +1041,12 @@ body {
 }
 
 /* ========== 响应式 ========== */
+@media (max-width: 1024px) {
+    .tasks-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
