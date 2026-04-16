@@ -504,26 +504,27 @@ body {
     padding: 0 clamp(12px, 4vw, 24px);
 }
 
-.tasks-grid {
+/* 主网格布局 - 左(工作) | 右(奇思妙想+生活) */
+.main-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: clamp(12px, 2vw, 24px);
     max-width: 1200px;
     margin: 0 auto;
 }
 
-@media (max-width: 1024px) {
-    .tasks-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.left-column,
+.right-column {
+    min-width: 0;
 }
 
-@media (max-width: 640px) {
-    .tasks-grid {
-        grid-template-columns: 1fr !important;
-    }
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 2vw, 24px);
 }
 
+/* 任务列通用样式 */
 .task-column {
     background: var(--bg-card);
     border: 2px solid var(--color-border);
@@ -532,6 +533,17 @@ body {
     box-shadow: var(--shadow-soft);
     min-width: 0;
     width: 100%;
+}
+
+/* 响应式：小屏幕单列 */
+@media (max-width: 768px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .right-column {
+        gap: clamp(10px, 2vw, 16px);
+    }
 }
 
 .task-column.work {
