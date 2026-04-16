@@ -887,7 +887,7 @@ const UI = {
             const tr = document.createElement('tr');
             
             // 时间格式化
-            const timeText = task.deadline ? this.formatTableTime(task.deadline) : '-';
+            const timeText = task.deadline ? this.formatTableTime(task.deadline, task.hasTime === true) : '-';
             const isUrgent = task.deadline && this.isUrgent(task.deadline);
             
             // 分类图标
@@ -917,28 +917,18 @@ const UI = {
     },
     
     // 格式化表格时间（简化版）
-    formatTableTime(deadline) {
+    formatTableTime(deadline, hasTime = true) {
         if (!deadline) return '-';
         
-        const date = new Date(deadline);
-        const now = new Date();
-        const diff = date - now;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        // 直接从字符串解析日期，避免时区问题
+        // deadline 格式: "2026-04-16T00:00:00"
+        const [datePart, timePart] = deadline.split('T');
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hour, minute] = timePart ? timePart.split(':').map(Number) : [0, 0];
         
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        const hour = String(date.getHours()).padStart(2, '0');
-        const minute = String(date.getMinutes()).padStart(2, '0');
+        const timeStr = hasTime ? ` ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}` : '';
         
-        if (days === 0) {
-            return `今天 ${hour}:${minute}`;
-        } else if (days === 1) {
-            return `明天 ${hour}:${minute}`;
-        } else if (days > 0 && days < 7) {
-            return `${month}/${day} ${hour}:${minute}`;
-        } else {
-            return `${month}/${day}`;
-        }
+        return `${year}年${month}月${day}日${timeStr}`;
     },
     
     // 处理文字识别
@@ -986,9 +976,10 @@ const UI = {
         
         // 分离日期和时间
         if (data.deadline) {
-            const dateObj = new Date(data.deadline);
-            const dateStr = dateObj.toISOString().split('T')[0];
-            const timeStr = String(dateObj.getHours()).padStart(2, '0') + ':' + String(dateObj.getMinutes()).padStart(2, '0');
+            // 直接从字符串提取，避免时区问题
+            // deadline 格式: "2026-04-16T14:30:00"
+            const [dateStr, timeFull] = data.deadline.split('T');
+            const timeStr = timeFull ? timeFull.substring(0, 5) : '09:00';
             
             document.getElementById('task-date').value = dateStr;
             document.getElementById('task-time').value = timeStr;
@@ -1026,13 +1017,14 @@ const UI = {
         
         let deadline = null;
         if (dateVal) {
-            deadline = `${dateVal}T${timeVal}`;
+            deadline = `${dateVal}T${timeVal}:00`;
         }
         
         const task = {
             title: document.getElementById('task-title').value,
             category: document.getElementById('task-category').value,
             deadline: deadline,
+            hasTime: hasTime && dateVal, // 记录是否设置了时间
             desc: document.getElementById('task-desc').value
         };
         
@@ -1058,6 +1050,9 @@ const UI = {
         const tasks = Storage.getAll();
         const workList = document.getElementById('work-list');
         const lifeList = document.getElementById('life-list');
+        
+        // 更新调试信息
+        this.updateDebugInfo();
         
         // 清空列表
         workList.innerHTML = '';
@@ -1109,7 +1104,15 @@ const UI = {
         div.className = `task-item ${task.category} ${task.completed ? 'completed' : ''}`;
         div.dataset.id = task.id;
         
-        const timeText = task.deadline ? this.formatDeadline(task.deadline) : '无截止时间';
+        // 直接内联时间格式化，避免函数调用问题
+        let timeText = '无截止时间';
+        if (task.deadline) {
+            const [datePart, timeFull] = task.deadline.split('T');
+            const [y, m, d] = datePart.split('-');
+            const hasTime = task.hasTime === true;
+            const timeStr = hasTime && timeFull ? ` ${timeFull.substring(0, 5)}` : '';
+            timeText = `${y}年${m}月${d}日${timeStr}`;
+        }
         const isUrgent = task.deadline && this.isUrgent(task.deadline);
         
         div.innerHTML = `
@@ -1131,37 +1134,30 @@ const UI = {
     },
     
     // 格式化截止时间
-    formatDeadline(deadline) {
+    formatDeadline(deadline, hasTime = true) {
         if (!deadline) return '无截止时间';
         
-        const date = new Date(deadline);
-        const now = new Date();
-        const diff = date - now;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        // 直接从字符串解析日期，避免时区问题
+        // deadline 格式: "2026-04-16T00:00:00"
+        const [datePart, timePart] = deadline.split('T');
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hour, minute] = timePart ? timePart.split(':').map(Number) : [0, 0];
         
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        const hour = String(date.getHours()).padStart(2, '0');
-        const minute = String(date.getMinutes()).padStart(2, '0');
+        const timeStr = hasTime ? ` ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}` : '';
         
-        if (days === 0) {
-            return `今天 ${hour}:${minute}`;
-        } else if (days === 1) {
-            return `明天 ${hour}:${minute}`;
-        } else if (days === -1) {
-            return `昨天 ${hour}:${minute}`;
-        } else if (days > 0 && days < 7) {
-            const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-            return `${weekdays[date.getDay()]} ${hour}:${minute}`;
-        } else {
-            return `${month}月${day}日 ${hour}:${minute}`;
-        }
+        return `${year}年${month}月${day}日${timeStr}`;
     },
     
     // 判断是否紧急（24小时内）
     isUrgent(deadline) {
         if (!deadline) return false;
-        const date = new Date(deadline);
+        
+        // 直接从字符串解析日期，避免时区问题
+        const [datePart, timePart] = deadline.split('T');
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hour, minute] = timePart ? timePart.split(':').map(Number) : [0, 0];
+        
+        const date = new Date(year, month - 1, day, hour, minute);
         const now = new Date();
         const diff = date - now;
         return diff > 0 && diff < 24 * 60 * 60 * 1000;
@@ -1231,15 +1227,18 @@ const UI = {
             
             // 分离日期和时间
             if (task.deadline) {
-                const dateObj = new Date(task.deadline);
-                const dateStr = dateObj.toISOString().split('T')[0];
-                const timeStr = String(dateObj.getHours()).padStart(2, '0') + ':' + String(dateObj.getMinutes()).padStart(2, '0');
+                // 从 deadline 字符串直接提取日期和时间（避免时区问题）
+                // deadline 格式: "2026-04-16T00:00:00" 或 "2026-04-16T14:30:00"
+                const [dateStr, timeFull] = task.deadline.split('T');
+                const timeStr = timeFull ? timeFull.substring(0, 5) : '00:00'; // 提取 HH:MM
                 
                 document.getElementById('modal-task-date').value = dateStr;
                 document.getElementById('modal-task-time').value = timeStr;
-                document.getElementById('modal-has-time').checked = true;
-                document.getElementById('modal-task-time').disabled = false;
-                document.getElementById('modal-task-time').style.opacity = '1';
+                // 根据 hasTime 字段设置时间复选框
+                const hasTimeChecked = task.hasTime === true; // 只有明确为 true 才勾选
+                document.getElementById('modal-has-time').checked = hasTimeChecked;
+                document.getElementById('modal-task-time').disabled = !hasTimeChecked;
+                document.getElementById('modal-task-time').style.opacity = hasTimeChecked ? '1' : '0.5';
             } else {
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('modal-task-date').value = today;
@@ -1283,13 +1282,14 @@ const UI = {
         
         let deadline = null;
         if (dateVal) {
-            deadline = `${dateVal}T${timeVal}`;
+            deadline = `${dateVal}T${timeVal}:00`;
         }
         
         const task = {
             title: document.getElementById('modal-task-title').value,
             category: document.getElementById('modal-task-category').value,
             deadline: deadline,
+            hasTime: hasTime && dateVal, // 记录是否设置了时间
             desc: document.getElementById('modal-task-desc').value
         };
         
@@ -1314,6 +1314,12 @@ const UI = {
         this.closeModal();
         this.renderTasks();
         this.updateStats();
+        
+        // 如果表格视图打开，也刷新表格
+        const tableView = document.getElementById('table-view');
+        if (tableView && tableView.style.display === 'block') {
+            this.renderTable();
+        }
     },
     
     // 显示提示
@@ -1475,6 +1481,11 @@ const UI = {
             this.openBackupModal();
         });
 
+        // 调试按钮
+        document.getElementById('debug-btn')?.addEventListener('click', () => {
+            this.toggleDebugMode();
+        });
+
         // 关闭备份弹窗
         document.getElementById('backup-modal-close')?.addEventListener('click', () => {
             this.closeBackupModal();
@@ -1580,6 +1591,41 @@ const UI = {
 
     // ========== GitHub Gist 同步功能 ==========
     bindGistSyncEvents() {
+        // 打开同步设置
+        document.getElementById('gist-sync-btn')?.addEventListener('click', () => {
+            this.openGistModal();
+        });
+
+        // 调试模式开关
+        this.debugMode = false;
+    },
+
+    // 切换调试模式
+    toggleDebugMode() {
+        this.debugMode = !this.debugMode;
+        const panel = document.getElementById('debug-panel');
+        if (this.debugMode) {
+            panel.style.display = 'block';
+            this.updateDebugInfo();
+            this.showToast('调试模式已开启');
+        } else {
+            panel.style.display = 'none';
+            this.showToast('调试模式已关闭');
+        }
+    },
+
+    // 更新调试信息
+    updateDebugInfo() {
+        if (!this.debugMode) return;
+        const tasks = Storage.getAll();
+        const debugContent = tasks.map(t => {
+            return `ID: ${t.id}\n标题: ${t.title}\ndeadline: ${t.deadline}\nhasTime: ${t.hasTime}\n显示: ${t.deadline ? this.formatDeadline(t.deadline, t.hasTime === true) : '无'}\n---`;
+        }).join('\n');
+        document.getElementById('debug-content').textContent = debugContent || '暂无任务';
+    },
+
+    // ========== Gist 同步功能 ==========
+    bindGistEvents() {
         // 打开同步设置
         document.getElementById('gist-sync-btn')?.addEventListener('click', () => {
             this.openGistModal();
