@@ -1149,8 +1149,15 @@ body {
 
 /* ========== 打印样式 ========== */
 @media print {
+    @page {
+        size: A5 portrait;
+        margin: 10mm;
+    }
+    
     body {
         background: white;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
     
     .header,
@@ -1158,16 +1165,30 @@ body {
     .view-toggle,
     .recognition-section,
     .stats-section,
-    .tasks-section {
+    .tasks-section,
+    .table-actions {
         display: none !important;
     }
     
-    .table-view {
+    .table-section {
         display: block !important;
+    }
+    
+    #table-view {
+        display: block !important;
+    }
+    
+    .a5-container {
+        padding: 0;
+        margin: 0;
     }
     
     .a5-page {
         box-shadow: none;
         border: 1px solid #ccc;
+        width: 148mm;
+        height: 210mm;
+        max-width: 148mm;
+        page-break-after: always;
     }
 }
