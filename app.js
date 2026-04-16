@@ -643,7 +643,7 @@ const UI = {
         });
         
         // 视图切换
-        document.querySelectorAll('.view-tab').forEach(btn => {
+        document.querySelectorAll('.view-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const view = e.target.dataset.view;
                 this.switchView(view);
@@ -831,7 +831,7 @@ const UI = {
     // 切换视图
     switchView(view) {
         // 更新按钮状态
-        document.querySelectorAll('.view-tab').forEach(btn => {
+        document.querySelectorAll('.view-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.view === view);
         });
         
