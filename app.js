@@ -3,6 +3,128 @@
  * 支持智能文本识别、时间解析、本地存储
  */
 
+// 自动同步管理器
+const AutoSync = {
+    syncTimeout: null,
+    SYNC_DELAY: 3000, // 3秒后自动同步
+    
+    // 触发自动同步（防抖）
+    trigger() {
+        // 清除之前的定时器
+        if (this.syncTimeout) {
+            clearTimeout(this.syncTimeout);
+        }
+        // 设置新的定时器
+        this.syncTimeout = setTimeout(() => {
+            this.sync();
+        }, this.SYNC_DELAY);
+    },
+    
+    // 执行同步
+    async sync() {
+        const settings = JSON.parse(localStorage.getItem('gist-settings') || '{}');
+        if (!settings.token || !settings.gistId) {
+            return; // 未配置不同步
+        }
+        
+        try {
+            const data = {
+                tasks: Storage.getAll(),
+                ideas: IdeasStorage.getAll(),
+                syncTime: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const body = {
+                description: '小爱酱账数据备份',
+                public: false,
+                files: {
+                    'xiaoaizhang-data.json': {
+                        content: JSON.stringify(data, null, 2)
+                    }
+                }
+            };
+            
+            const response = await fetch(`https://api.github.com/gists/${settings.gistId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${settings.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            
+            if (response.ok) {
+                console.log('自动同步成功:', new Date().toLocaleString());
+                // 显示同步指示器
+                UI.showSyncIndicator();
+            }
+        } catch (err) {
+            console.error('自动同步失败:', err);
+        }
+    },
+    
+    // 页面加载时从云端下载
+    async downloadOnLoad() {
+        const settings = JSON.parse(localStorage.getItem('gist-settings') || '{}');
+        if (!settings.token || !settings.gistId) {
+            return; // 未配置不下载
+        }
+        
+        try {
+            const response = await fetch(`https://api.github.com/gists/${settings.gistId}`, {
+                headers: {
+                    'Authorization': `token ${settings.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            
+            if (!response.ok) return;
+            
+            const result = await response.json();
+            const fileContent = result.files['xiaoaizhang-data.json']?.content;
+            if (!fileContent) return;
+            
+            const data = JSON.parse(fileContent);
+            const localTasks = Storage.getAll();
+            const localIdeas = IdeasStorage.getAll();
+            
+            // 合并策略：以云端数据为准，但保留本地独有的数据
+            let hasChanges = false;
+            
+            if (data.tasks && Array.isArray(data.tasks)) {
+                // 创建云端任务ID映射
+                const cloudTaskIds = new Set(data.tasks.map(t => t.id));
+                // 找出本地独有的任务
+                const localOnlyTasks = localTasks.filter(t => !cloudTaskIds.has(t.id));
+                // 合并：云端数据 + 本地独有
+                const mergedTasks = [...data.tasks, ...localOnlyTasks];
+                Storage.save(mergedTasks);
+                if (localOnlyTasks.length > 0) hasChanges = true;
+            }
+            
+            if (data.ideas && Array.isArray(data.ideas)) {
+                const cloudIdeaIds = new Set(data.ideas.map(i => i.id));
+                const localOnlyIdeas = localIdeas.filter(i => !cloudIdeaIds.has(i.id));
+                const mergedIdeas = [...data.ideas, ...localOnlyIdeas];
+                IdeasStorage.save(mergedIdeas);
+                if (localOnlyIdeas.length > 0) hasChanges = true;
+            }
+            
+            // 如果有本地独有数据，上传合并后的结果
+            if (hasChanges) {
+                setTimeout(() => this.sync(), 1000);
+            }
+            
+            console.log('初始同步完成:', new Date(data.syncTime).toLocaleString());
+            UI.showToast('数据已同步');
+        } catch (err) {
+            console.error('初始同步失败:', err);
+        }
+    }
+};
+
 // 数据存储
 const Storage = {
     KEY: 'warm-diary-tasks',
@@ -14,6 +136,7 @@ const Storage = {
     
     save(tasks) {
         localStorage.setItem(this.KEY, JSON.stringify(tasks));
+        AutoSync.trigger(); // 触发自动同步
     },
     
     add(task) {
@@ -66,6 +189,7 @@ const IdeasStorage = {
     
     save(ideas) {
         localStorage.setItem(this.KEY, JSON.stringify(ideas));
+        AutoSync.trigger(); // 触发自动同步
     },
     
     add(idea) {
@@ -493,6 +617,8 @@ const UI = {
         this.renderTasks();
         this.updateStats();
         this.renderIdeas();
+        // 页面加载时自动从云端同步
+        AutoSync.downloadOnLoad();
     },
     
     // 更新日期显示
@@ -1199,6 +1325,21 @@ const UI = {
         setTimeout(() => {
             toast.classList.remove('show');
         }, 2500);
+    },
+    
+    // 显示同步成功指示器
+    showSyncIndicator() {
+        const btn = document.getElementById('gist-sync-btn');
+        if (!btn) return;
+        
+        const original = btn.textContent;
+        btn.textContent = '✓';
+        btn.style.color = '#28a745';
+        
+        setTimeout(() => {
+            btn.textContent = original;
+            btn.style.color = '';
+        }, 2000);
     },
     
     // ========== 奇思妙想功能 ==========
