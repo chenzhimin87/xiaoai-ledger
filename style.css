@@ -69,7 +69,7 @@ body {
 .header {
     background: var(--bg-card);
     border: 2px solid var(--color-border);
-    padding: 12px 20px;
+    padding: 12px clamp(12px, 4vw, 24px);
     box-shadow: var(--shadow-soft);
     position: sticky;
     top: 0;
@@ -82,6 +82,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .logo {
@@ -99,7 +101,7 @@ body {
 }
 
 .logo-text {
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
     font-weight: 700;
     color: var(--color-primary-dark);
 }
@@ -127,6 +129,24 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    width: 100%;
+}
+
+/* ========== 应用容器 - 响应式布局 ========== */
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-container > * {
+    width: 100%;
+}
+
+.app-container > section,
+.app-container > .container {
+    padding-left: clamp(12px, 4vw, 24px);
+    padding-right: clamp(12px, 4vw, 24px);
 }
 
 /* ========== 区块标题 ========== */
@@ -145,14 +165,26 @@ body {
     background: var(--bg-card);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-large);
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: clamp(16px, 3vw, 24px);
+    margin-bottom: clamp(16px, 3vw, 24px);
     box-shadow: var(--shadow-soft);
+    width: 100%;
 }
 
 /* ========== 智能识别区 ========== */
 .recognition-section {
     margin-bottom: 20px;
+    padding: 0 clamp(12px, 4vw, 24px);
+}
+
+.section-card {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-card);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-large);
+    padding: clamp(16px, 3vw, 24px);
+    box-shadow: var(--shadow-soft);
 }
 
 .recognition-tabs {
@@ -385,12 +417,15 @@ body {
 /* ========== 统计面板 ========== */
 .stats-section {
     margin-bottom: 20px;
+    padding: 0 clamp(12px, 4vw, 24px);
 }
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: clamp(12px, 2vw, 20px);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .stat-card {
@@ -441,6 +476,9 @@ body {
     border: 2px solid var(--color-border);
     border-radius: var(--radius-large);
     padding: 5px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .view-btn {
@@ -463,20 +501,24 @@ body {
 /* ========== 任务区域 ========== */
 .tasks-section {
     margin-bottom: 20px;
+    padding: 0 clamp(12px, 4vw, 24px);
 }
 
 .tasks-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(16px, 3vw, 24px);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .task-column {
     background: var(--bg-card);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-large);
-    padding: 15px;
+    padding: clamp(12px, 2vw, 20px);
     box-shadow: var(--shadow-soft);
+    min-width: 0;
 }
 
 .task-column.work {
@@ -703,15 +745,18 @@ body {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+    padding: 0 clamp(12px, 4vw, 24px);
+    overflow-x: auto;
 }
 
 .a5-page {
-    width: 148mm;
+    width: 100%;
+    max-width: 148mm;
     min-height: 210mm;
     background: white;
     border: 2px solid var(--color-border);
     border-radius: var(--radius-large);
-    padding: 20px;
+    padding: clamp(15px, 3vw, 25px);
     box-shadow: var(--shadow-soft);
 }
 
@@ -992,6 +1037,12 @@ body {
     
     .date-display {
         text-align: center;
+        font-size: 0.9rem;
+    }
+    
+    .logo-icon {
+        width: 40px;
+        height: 40px;
     }
     
     .form-row {
@@ -1009,11 +1060,65 @@ body {
     .a5-page {
         width: 100%;
         min-height: auto;
+        padding: 15px;
     }
     
     .task-actions,
     .idea-actions {
         opacity: 1;
+    }
+    
+    .modal {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .fab {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .upload-area {
+        padding: 30px 20px;
+    }
+    
+    .recognition-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-actions {
+        gap: 5px;
+    }
+    
+    .btn-icon {
+        padding: 5px 8px;
+        min-width: 32px;
+        min-height: 32px;
+        font-size: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .column-title {
+        font-size: 1rem;
     }
 }
 
