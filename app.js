@@ -1598,8 +1598,8 @@ const UI = {
         });
 
         // 保存设置
-        document.getElementById('save-gist-settings')?.addEventListener('click', () => {
-            this.saveGistSettings();
+        document.getElementById('save-gist-settings')?.addEventListener('click', async () => {
+            await this.saveGistSettings();
         });
 
         // 上传数据到 Gist
@@ -1640,13 +1640,63 @@ const UI = {
     },
 
     // 保存 Gist 设置
-    saveGistSettings() {
+    async saveGistSettings() {
         const token = document.getElementById('gist-token').value.trim();
-        const gistId = document.getElementById('gist-id').value.trim();
+        let gistId = document.getElementById('gist-id').value.trim();
 
         if (!token) {
             this.showToast('请输入 GitHub Token');
             return;
+        }
+
+        // 如果没有 Gist ID，自动创建一个新的
+        if (!gistId) {
+            try {
+                this.showToast('正在创建 Gist...');
+                
+                const data = {
+                    tasks: Storage.getAll(),
+                    ideas: IdeasStorage.getAll(),
+                    syncTime: new Date().toISOString(),
+                    version: '1.0'
+                };
+
+                const body = {
+                    description: '小爱酱账数据备份',
+                    public: false,
+                    files: {
+                        'xiaoaizhang-data.json': {
+                            content: JSON.stringify(data, null, 2)
+                        }
+                    }
+                };
+
+                const response = await fetch('https://api.github.com/gists', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || '创建失败');
+                }
+
+                const result = await response.json();
+                gistId = result.id;
+                
+                // 更新输入框
+                document.getElementById('gist-id').value = gistId;
+                this.showToast(`创建成功！Gist ID: ${gistId}`);
+            } catch (err) {
+                this.showToast('创建 Gist 失败: ' + err.message);
+                console.error('创建 Gist 错误:', err);
+                return;
+            }
         }
 
         const settings = { token, gistId };
