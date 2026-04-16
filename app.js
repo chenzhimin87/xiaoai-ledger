@@ -1203,14 +1203,17 @@ const UI = {
         }
     },
     
-    // 更新统计
+    // 更新统计（统计面板已删除，此函数保留但不再更新DOM）
     updateStats() {
-        const tasks = Storage.getAll();
-        const workCount = tasks.filter(t => t.category === 'work' && !t.completed).length;
-        const lifeCount = tasks.filter(t => t.category === 'life' && !t.completed).length;
-        
-        document.getElementById('work-count').textContent = workCount;
-        document.getElementById('life-count').textContent = lifeCount;
+        // 统计面板已移除，此函数保留用于兼容性
+        // 如需重新启用统计，取消下面注释并恢复HTML中的统计面板
+        // const tasks = Storage.getAll();
+        // const workCount = tasks.filter(t => t.category === 'work' && !t.completed).length;
+        // const lifeCount = tasks.filter(t => t.category === 'life' && !t.completed).length;
+        // const workEl = document.getElementById('work-count');
+        // const lifeEl = document.getElementById('life-count');
+        // if (workEl) workEl.textContent = workCount;
+        // if (lifeEl) lifeEl.textContent = lifeCount;
     },
     
     // 打开弹窗
