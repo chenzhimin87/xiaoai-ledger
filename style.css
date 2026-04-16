@@ -876,6 +876,10 @@ body {
 }
 
 .modal {
+    pointer-events: auto;
+}
+
+.modal {
     background: var(--bg-card);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-large);

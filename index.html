@@ -352,11 +352,11 @@
     </div>
 
     <!-- Gist 同步弹窗 -->
-    <div class="modal-overlay" id="gist-modal-overlay">
-        <div class="modal">
+    <div class="modal-overlay" id="gist-modal-overlay" style="pointer-events:none;">
+        <div class="modal" style="pointer-events:auto;">
             <div class="modal-header">
                 <h3 class="modal-title">☁️ 云端同步</h3>
-                <button type="button" class="modal-close" id="gist-modal-close">&times;</button>
+                <button type="button" class="modal-close" id="gist-modal-close" onclick="document.getElementById('gist-modal-overlay').classList.remove('show');document.body.style.overflow='';return false;">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -378,7 +378,7 @@
                     <small style="color: var(--color-text-muted); display: block; margin-top: 4px;">多设备同步时需要填写相同的 Gist ID</small>
                 </div>
                 <div class="backup-actions" style="margin-top: 20px;">
-                    <button type="button" class="btn-secondary" id="save-gist-settings">保存设置</button>
+                    <button type="button" class="btn-secondary" id="save-gist-settings" onclick="var t=document.getElementById('gist-token').value.trim();var g=document.getElementById('gist-id').value.trim();if(!t){alert('请输入GitHub Token');return;}localStorage.setItem('gist-settings',JSON.stringify({token:t,gistId:g,autoSync:true}));document.getElementById('gist-status').textContent='已配置';alert('设置已保存！');return false;">保存设置</button>
                 </div>
                 <div class="backup-divider"></div>
                 <div class="backup-section">
@@ -405,6 +405,6 @@
         <pre id="debug-content"></pre>
     </div>
 
-    <script src="app.js?v=8"></script>
+    <script src="app.js?v=18"></script>
 </body>
 </html>

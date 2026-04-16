@@ -1626,36 +1626,33 @@ const UI = {
 
     // ========== Gist 同步功能 ==========
     bindGistEvents() {
-        // 打开同步设置
-        document.getElementById('gist-sync-btn')?.addEventListener('click', () => {
-            this.openGistModal();
-        });
-
+        const self = this;
+        
         // 关闭同步弹窗
-        document.getElementById('gist-modal-close')?.addEventListener('click', () => {
-            this.closeGistModal();
+        document.getElementById('gist-modal-close')?.addEventListener('click', function() {
+            self.closeGistModal();
         });
 
         // 点击遮罩关闭
-        document.getElementById('gist-modal-overlay')?.addEventListener('click', (e) => {
+        document.getElementById('gist-modal-overlay')?.addEventListener('click', function(e) {
             if (e.target.id === 'gist-modal-overlay') {
-                this.closeGistModal();
+                self.closeGistModal();
             }
         });
 
         // 保存设置
-        document.getElementById('save-gist-settings')?.addEventListener('click', async () => {
-            await this.saveGistSettings();
+        document.getElementById('save-gist-settings')?.addEventListener('click', async function() {
+            await self.saveGistSettings();
         });
 
         // 上传数据到 Gist
-        document.getElementById('upload-to-gist')?.addEventListener('click', () => {
-            this.uploadToGist();
+        document.getElementById('upload-to-gist')?.addEventListener('click', function() {
+            self.uploadToGist();
         });
 
         // 从 Gist 下载数据
-        document.getElementById('download-from-gist')?.addEventListener('click', () => {
-            this.downloadFromGist();
+        document.getElementById('download-from-gist')?.addEventListener('click', function() {
+            self.downloadFromGist();
         });
     },
 
@@ -1894,11 +1891,26 @@ const UI = {
     }
 };
 
+// 全局错误捕获
+window.onerror = function(msg, url, line, col, error) {
+    console.error('全局错误:', msg, '行:', line, '列:', col);
+    alert('JS错误: ' + msg + ' (行:' + line + ')');
+    return false;
+};
+
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
-    UI.init();
-    UI.bindBackupEvents();
-    UI.bindGistSyncEvents();
+    try {
+        console.log('开始初始化...');
+        UI.init();
+        UI.bindBackupEvents();
+        UI.bindGistSyncEvents();
+        UI.bindGistEvents();
+        console.log('初始化完成');
+    } catch (e) {
+        console.error('初始化错误:', e);
+        alert('初始化错误: ' + e.message);
+    }
 });
 
 // 注册 Service Worker（PWA支持）- 可选功能
