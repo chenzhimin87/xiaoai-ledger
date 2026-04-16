@@ -656,6 +656,17 @@ const UI = {
             this.showToast('表格已刷新');
         });
         
+        // 打印选中按钮
+        document.getElementById('print-selected-btn')?.addEventListener('click', () => {
+            this.printSelected();
+        });
+        
+        // 全选/取消全选
+        document.getElementById('select-all-print')?.addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('.print-checkbox');
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
+        });
+        
         // 文字识别
         document.getElementById('recognize-text-btn').addEventListener('click', () => {
             this.handleTextRecognize();
@@ -873,7 +884,7 @@ const UI = {
         if (tasks.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 20px; color: var(--color-text-muted);">
+                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--color-text-muted);">
                         暂无日程，快去添加吧～
                     </td>
                 </tr>
@@ -894,6 +905,9 @@ const UI = {
             const categoryIcon = task.category === 'work' ? '💼' : '🏠';
             
             tr.innerHTML = `
+                <td class="col-print">
+                    <input type="checkbox" class="print-checkbox" data-task-id="${task.id}" title="选择打印">
+                </td>
                 <td class="col-status">
                     <span class="status-checkbox ${task.completed ? 'checked' : ''}"></span>
                 </td>
@@ -914,6 +928,35 @@ const UI = {
         // 更新统计
         const completedCount = tasks.filter(t => t.completed).length;
         statsEl.textContent = `${tasks.length} 项 (${completedCount} 完成)`;
+    },
+    
+    // 打印选中的日程
+    printSelected() {
+        const checkboxes = document.querySelectorAll('.print-checkbox:checked');
+        if (checkboxes.length === 0) {
+            this.showToast('请先选择要打印的日程');
+            return;
+        }
+        
+        // 给选中的行添加打印标记
+        document.querySelectorAll('.print-checkbox').forEach(cb => {
+            const row = cb.closest('tr');
+            if (cb.checked) {
+                row.classList.add('print-selected');
+            } else {
+                row.classList.remove('print-selected');
+            }
+        });
+        
+        // 触发打印
+        window.print();
+        
+        // 打印后清除标记
+        setTimeout(() => {
+            document.querySelectorAll('tr.print-selected').forEach(row => {
+                row.classList.remove('print-selected');
+            });
+        }, 1000);
     },
     
     // 格式化表格时间（简化版）

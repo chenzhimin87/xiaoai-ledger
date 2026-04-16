@@ -823,6 +823,17 @@ body {
     background: var(--bg-secondary);
 }
 
+.a5-table .col-print {
+    width: 30px;
+    text-align: center;
+}
+
+.a5-table .col-print input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
 .a5-table .col-status {
     width: 30px;
     text-align: center;
@@ -1190,5 +1201,26 @@ body {
         height: 210mm;
         max-width: 148mm;
         page-break-after: always;
+    }
+    
+    /* 打印时隐藏选择列 */
+    .col-print,
+    td.col-print,
+    th.col-print {
+        display: none !important;
+    }
+    
+    /* 只显示选中的行，隐藏未选中的行 */
+    #a5-table-body tr {
+        display: none !important;
+    }
+    
+    #a5-table-body tr.print-selected {
+        display: table-row !important;
+    }
+    
+    /* 如果没有选中任何行，显示所有行（兼容旧行为） */
+    #a5-table-body:not(:has(tr.print-selected)) tr {
+        display: table-row !important;
     }
 }

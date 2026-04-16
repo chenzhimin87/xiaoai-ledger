@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小爱酱账 - 智能日程管理</title>
-    <link rel="stylesheet" href="style.css?v=25">
+    <link rel="stylesheet" href="style.css?v=26">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#F5E6D3">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -191,6 +191,7 @@
                         <table class="a5-table" id="a5-table">
                             <thead>
                                 <tr>
+                                    <th class="col-print"><input type="checkbox" id="select-all-print" title="全选"></th>
                                     <th class="col-status">✓</th>
                                     <th class="col-time">时间</th>
                                     <th class="col-title">事项</th>
@@ -209,7 +210,7 @@
                 </div>
             </div>
             <div class="table-actions">
-                <button class="btn-secondary" onclick="window.print()">🖨️ 打印</button>
+                <button class="btn-secondary" id="print-selected-btn">🖨️ 打印选中</button>
                 <button class="btn-primary" id="refresh-table-btn">🔄 刷新</button>
             </div>
         </section>
@@ -384,6 +385,6 @@
         <pre id="debug-content"></pre>
     </div>
 
-    <script src="app.js?v=25"></script>
+    <script src="app.js?v=26"></script>
 </body>
 </html>
